@@ -1,7 +1,11 @@
+import { apiConfig } from "./config.js";
 import type { Request, Response, NextFunction } from "express";
 
-
-export function logResponses(req: Request, res: Response, next: NextFunction): void {
+export function logResponses(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
   res.on("finish", () => {
     const statusCode = res.statusCode;
 
@@ -9,6 +13,16 @@ export function logResponses(req: Request, res: Response, next: NextFunction): v
       console.log(`[NON-OK] ${req.method} ${req.url} - Status: ${statusCode}`);
     }
   });
+
+  next();
+}
+
+export function metricsInc(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  apiConfig.fileserverHits++;
 
   next();
 }
