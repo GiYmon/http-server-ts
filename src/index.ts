@@ -8,6 +8,7 @@ const app = express();
 const PORT = 8080;
 
 app.use(logResponses);
+app.use(express.json());
 app.use("/app", metricsInc, express.static("./src/app"));
 app.get("/api/healthz", handlerReadiness);
 app.post("/api/validate_chirp", handlerChirpValidation);
@@ -45,28 +46,15 @@ function handlerChirpValidation(req: Request, res: Response) {
     body: string;
   };
 
-  let body = "";
+  const params: parameters = req.body;
 
-  req.on("data", (chunk) => {
-    body += chunk;
-  });
+  const maxChirpLength = 140;
+  if (params.body.length > maxChirpLength) {
+    respondWithError(res, 400, "Chirp is too long");
+    return;
+  }
 
-  let params: parameters;
-  req.on("end", () => {
-    try {
-      params = JSON.parse(body);
-    } catch (e) {
-      respondWithError(res, 400, "Invalid JSON");
-      return;
-    }
-    const maxChirpLength = 140;
-    if (params.body.length > maxChirpLength) {
-      respondWithError(res, 400, "Chirp is too long");
-      return;
-    }
-
-    respondWithJSON(res, 200, {
-      valid: true,
-    });
+  respondWithJSON(res, 200, {
+    valid: true,
   });
 }
