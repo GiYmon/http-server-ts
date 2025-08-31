@@ -1,4 +1,4 @@
-import { apiConfig } from "./config.js";
+import { config } from "./config.js";
 export function logResponses(req, res, next) {
     res.on("finish", () => {
         const statusCode = res.statusCode;
@@ -9,6 +9,6 @@ export function logResponses(req, res, next) {
     next();
 }
 export function metricsInc(req, res, next) {
-    apiConfig.fileserverHits++;
+    config.fileserverHits++;
     next();
 }

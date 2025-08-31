@@ -4,20 +4,26 @@ import { UnauthorizedError } from "../errors/unauthorizedError.js";
 import { NotFoundError } from "../errors/notFoundError.js";
 import { ForbiddenError } from "../errors/forbiddenError.js";
 export function errorHandler(err, req, res, next) {
-    console.error(`${err.name}: ${err.message}`);
+    let statusCode = 500;
+    let message = "Something went wrong on our end";
     if (err instanceof BadRequestError) {
-        respondWithError(res, 400, err.message);
+        statusCode = 400;
+        message = err.message;
     }
     else if (err instanceof UnauthorizedError) {
-        respondWithError(res, 401, err.message);
+        statusCode = 401;
+        message = err.message;
     }
     else if (err instanceof ForbiddenError) {
-        respondWithError(res, 403, err.message);
+        statusCode = 403;
+        message = err.message;
     }
     else if (err instanceof NotFoundError) {
-        respondWithError(res, 404, err.message);
+        statusCode = 404;
+        message = err.message;
     }
-    else {
-        respondWithError(res, 500, err.message);
+    if (statusCode >= 500) {
+        console.log(err.message);
     }
+    respondWithError(res, statusCode, message);
 }

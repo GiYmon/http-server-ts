@@ -3,3 +3,6 @@ node_modules/
 jspm_packages/
 
 server.log
+
+.env
+.env.local

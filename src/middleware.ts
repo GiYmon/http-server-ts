@@ -1,4 +1,4 @@
-import { apiConfig } from "./config.js";
+import { config } from "./config.js";
 import type { Request, Response, NextFunction } from "express";
 
 export function logResponses(
@@ -22,7 +22,7 @@ export function metricsInc(
   res: Response,
   next: NextFunction
 ): void {
-  apiConfig.fileserverHits++;
+  config.fileServerHits++;
 
   next();
 }
