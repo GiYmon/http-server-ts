@@ -22,7 +22,7 @@ export function metricsInc(
   res: Response,
   next: NextFunction
 ): void {
-  config.fileServerHits++;
+  config.api.fileServerHits++;
 
   next();
 }

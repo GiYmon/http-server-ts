@@ -9,6 +9,6 @@ export function logResponses(req, res, next) {
     next();
 }
 export function metricsInc(req, res, next) {
-    config.fileserverHits++;
+    config.api.fileServerHits++;
     next();
 }
