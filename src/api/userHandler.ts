@@ -1,6 +1,6 @@
 import { createUser } from "../db/queries/users.js";
 import { respondWithJSON } from "./json.js";
-import { BadRequestError } from "src/errors/badRequestError.js";
+import { BadRequestError } from "../errors/badRequestError.js";
 import type { Request, Response } from "express";
 
 export async function handlerUserCreation(req: Request, res: Response) {
