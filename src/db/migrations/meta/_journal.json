@@ -15,6 +15,20 @@
       "when": 1756829743063,
       "tag": "0001_swift_deadpool",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1756922078374,
+      "tag": "0002_chilly_catseye",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1756922177572,
+      "tag": "0003_wild_black_knight",
+      "breakpoints": true
     }
   ]
 }
