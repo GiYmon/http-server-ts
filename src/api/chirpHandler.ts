@@ -1,6 +1,6 @@
 import { respondWithJSON } from "./json.js";
 import { BadRequestError } from "../errors/badRequestError.js";
-import { createChirp } from "../db/queries/chirps.js";
+import { create, list } from "../db/queries/chirps.js";
 
 import type { Request, Response } from "express";
 
@@ -17,7 +17,7 @@ export async function handlerChirpCreation(req: Request, res: Response) {
 
   throwErrorIfChirpIsTooLong(params.body);
 
-  const chirp = await createChirp({
+  const chirp = await create({
     body: removeRestrictedWords(params.body),
     userId: params.userId,
   });
@@ -26,13 +26,13 @@ export async function handlerChirpCreation(req: Request, res: Response) {
     throw new Error("Failed to create chirp");
   }
 
-  respondWithJSON(res, 201, {
-    id: chirp.id,
-    createdAt: chirp.createdAt,
-    updatedAt: chirp.updatedAt,
-    body: chirp.body,
-    userId: chirp.userId,
-  });
+  respondWithJSON(res, 201, chirp);
+}
+
+export async function handlerChirpRetrieval(req: Request, res: Response) {
+  const chirps = await list();
+
+  respondWithJSON(res, 200, chirps);
 }
 
 function throwErrorIfChirpIsTooLong(body: string) {

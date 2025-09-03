@@ -1,13 +1,13 @@
 import { respondWithJSON } from "./json.js";
 import { BadRequestError } from "../errors/badRequestError.js";
-import { createChirp } from "../db/queries/chirps.js";
+import { create, list } from "../db/queries/chirps.js";
 export async function handlerChirpCreation(req, res) {
     const params = req.body;
     if (!params.userId || !params.body) {
         throw new BadRequestError("Missing required fields");
     }
     throwErrorIfChirpIsTooLong(params.body);
-    const chirp = await createChirp({
+    const chirp = await create({
         body: removeRestrictedWords(params.body),
         userId: params.userId,
     });
@@ -21,6 +21,16 @@ export async function handlerChirpCreation(req, res) {
         body: chirp.body,
         userId: chirp.userId,
     });
+}
+export async function handlerChirpRetrieval(req, res) {
+    const chirps = await list();
+    respondWithJSON(res, 200, chirps.map((chirp) => ({
+        id: chirp.id,
+        createdAt: chirp.createdAt,
+        updatedAt: chirp.updatedAt,
+        body: chirp.body,
+        userId: chirp.userId,
+    })));
 }
 function throwErrorIfChirpIsTooLong(body) {
     const maxChirpLength = 140;
