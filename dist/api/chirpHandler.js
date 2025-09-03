@@ -1,6 +1,7 @@
 import { respondWithJSON } from "./json.js";
 import { BadRequestError } from "../errors/badRequestError.js";
-import { create, list } from "../db/queries/chirps.js";
+import { NotFoundError } from "../errors/notFoundError.js";
+import { create, list, getById } from "../db/queries/chirps.js";
 export async function handlerChirpCreation(req, res) {
     const params = req.body;
     if (!params.userId || !params.body) {
@@ -14,23 +15,22 @@ export async function handlerChirpCreation(req, res) {
     if (!chirp) {
         throw new Error("Failed to create chirp");
     }
-    respondWithJSON(res, 201, {
-        id: chirp.id,
-        createdAt: chirp.createdAt,
-        updatedAt: chirp.updatedAt,
-        body: chirp.body,
-        userId: chirp.userId,
-    });
+    respondWithJSON(res, 201, chirp);
 }
-export async function handlerChirpRetrieval(req, res) {
+export async function handlerChirpList(req, res) {
     const chirps = await list();
-    respondWithJSON(res, 200, chirps.map((chirp) => ({
-        id: chirp.id,
-        createdAt: chirp.createdAt,
-        updatedAt: chirp.updatedAt,
-        body: chirp.body,
-        userId: chirp.userId,
-    })));
+    respondWithJSON(res, 200, chirps);
+}
+export async function handlerChirpRetrival(req, res) {
+    const { chirpId } = req.params;
+    if (!chirpId) {
+        throw new BadRequestError("Missing chirpId parameter");
+    }
+    const chirp = await getById(chirpId);
+    if (!chirp) {
+        throw new NotFoundError("Chirp not found");
+    }
+    respondWithJSON(res, 200, chirp);
 }
 function throwErrorIfChirpIsTooLong(body) {
     const maxChirpLength = 140;

@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { db } from "../index.js";
 import { NewChirp, chirps } from "../schema.js";
 
@@ -15,6 +16,16 @@ export async function list(): Promise<NewChirp[]> {
   const results = await db.select().from(chirps);
 
   return results;
+}
+
+export async function getById(id: string): Promise<NewChirp | undefined> {
+  const [result] = await db
+    .select()
+    .from(chirps)
+    .where(eq(chirps.id, id))
+    .limit(1);
+
+  return result;
 }
 
 export async function deleteAll() {

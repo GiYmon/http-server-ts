@@ -1,6 +1,7 @@
 import { respondWithJSON } from "./json.js";
 import { BadRequestError } from "../errors/badRequestError.js";
-import { create, list } from "../db/queries/chirps.js";
+import { NotFoundError } from "../errors/notFoundError.js";
+import { create, list, getById } from "../db/queries/chirps.js";
 
 import type { Request, Response } from "express";
 
@@ -29,10 +30,26 @@ export async function handlerChirpCreation(req: Request, res: Response) {
   respondWithJSON(res, 201, chirp);
 }
 
-export async function handlerChirpRetrieval(req: Request, res: Response) {
+export async function handlerChirpList(req: Request, res: Response) {
   const chirps = await list();
 
   respondWithJSON(res, 200, chirps);
+}
+
+export async function handlerChirpRetrival(req: Request, res: Response) {
+  const { chirpId } = req.params;
+
+  if (!chirpId) {
+    throw new BadRequestError("Missing chirpId parameter");
+  }
+
+  const chirp = await getById(chirpId);
+
+  if (!chirp) {
+    throw new NotFoundError("Chirp not found");
+  }
+
+  respondWithJSON(res, 200, chirp);
 }
 
 function throwErrorIfChirpIsTooLong(body: string) {

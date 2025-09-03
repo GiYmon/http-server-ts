@@ -9,7 +9,8 @@ import { handlerResetMetrics } from "./api/resetMetricsHandler.js";
 import { handlerUserCreation } from "./api/userHandler.js";
 import {
   handlerChirpCreation,
-  handlerChirpRetrieval,
+  handlerChirpList,
+  handlerChirpRetrival,
 } from "./api/chirpHandler.js";
 import { errorHandler } from "./api/errorHandler.js";
 import { config } from "./config.js";
@@ -37,10 +38,13 @@ app.post("/api/users", (req, res, next) => {
   Promise.resolve(handlerUserCreation(req, res)).catch(next);
 });
 app.get("/api/chirps", (req, res, next) => {
-  Promise.resolve(handlerChirpRetrieval(req, res)).catch(next);
+  Promise.resolve(handlerChirpList(req, res)).catch(next);
 });
 app.post("/api/chirps", (req, res, next) => {
   Promise.resolve(handlerChirpCreation(req, res)).catch(next);
+});
+app.get("/api/chirps/:chirpId", (req, res, next) => {
+  Promise.resolve(handlerChirpRetrival(req, res)).catch(next);
 });
 
 app.use(errorHandler);
