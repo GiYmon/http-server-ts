@@ -2,30 +2,23 @@ import { respondWithJSON } from "./json.js";
 import { BadRequestError } from "../errors/badRequestError.js";
 import { NotFoundError } from "../errors/notFoundError.js";
 import { create, list, getById } from "../db/queries/chirps.js";
+import { getBearerToken, validateJWT } from "../auth.js";
+import { config } from "../config.js";
 
 import type { Request, Response } from "express";
 
 export async function handlerChirpCreation(req: Request, res: Response) {
   type parameters = {
-    userId: string;
     body: string;
   };
+
   const params: parameters = req.body;
 
-  if (!params.userId || !params.body) {
-    throw new BadRequestError("Missing required fields");
-  }
+  const token = getBearerToken(req);
+  const userId = validateJWT(token, config.jwt.secret);
 
-  throwErrorIfChirpIsTooLong(params.body);
-
-  const chirp = await create({
-    body: removeRestrictedWords(params.body),
-    userId: params.userId,
-  });
-
-  if (!chirp) {
-    throw new Error("Failed to create chirp");
-  }
+  const cleaned = validateChirp(params.body);
+  const chirp = await create({ body: cleaned, userId: userId });
 
   respondWithJSON(res, 201, chirp);
 }
@@ -52,26 +45,29 @@ export async function handlerChirpRetrival(req: Request, res: Response) {
   respondWithJSON(res, 200, chirp);
 }
 
-function throwErrorIfChirpIsTooLong(body: string) {
+function validateChirp(body: string) {
   const maxChirpLength = 140;
   if (body.length > maxChirpLength) {
-    throw new BadRequestError("Chirp is too long. Max length is 140");
+    throw new BadRequestError(
+      `Chirp is too long. Max length is ${maxChirpLength}`
+    );
   }
+
+  const badWords = ["kerfuffle", "sharbert", "fornax"];
+  return getCleanedBody(body, badWords);
 }
 
-function removeRestrictedWords(body: string): string {
-  const restrictedWords = ["kerfuffle", "sharbert", "fornax"];
-  const replacement = "****";
-
+function getCleanedBody(body: string, badWords: string[]) {
   const words = body.split(" ");
 
-  const filteredWords = words.map((word) => {
-    if (restrictedWords.includes(word.toLowerCase())) {
-      return replacement;
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i];
+    const loweredWord = word.toLowerCase();
+    if (badWords.includes(loweredWord)) {
+      words[i] = "****";
     }
+  }
 
-    return word;
-  });
-
-  return filteredWords.join(" ");
+  const cleaned = words.join(" ");
+  return cleaned;
 }
