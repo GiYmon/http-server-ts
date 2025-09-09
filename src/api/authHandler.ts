@@ -4,7 +4,7 @@ import {
   userForRefreshToken,
   revokeRefreshToken,
 } from "../db/queries/refereshTokens.js";
-import { respondWithJSON, respondWithError } from "./json.js";
+import { respondWithJSON } from "./json.js";
 import { UnauthorizedError } from "../errors/unauthorizedError.js";
 import {
   checkPasswordHash,
