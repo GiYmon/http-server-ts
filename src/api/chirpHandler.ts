@@ -1,7 +1,8 @@
 import { respondWithJSON } from "./json.js";
 import { BadRequestError } from "../errors/badRequestError.js";
 import { NotFoundError } from "../errors/notFoundError.js";
-import { create, list, getById } from "../db/queries/chirps.js";
+import { ForbiddenError } from "../errors/forbiddenError.js";
+import { create, list, getById, deleteById } from "../db/queries/chirps.js";
 import { getBearerToken, validateJWT } from "../auth.js";
 import { config } from "../config.js";
 
@@ -43,6 +44,26 @@ export async function handlerChirpRetrival(req: Request, res: Response) {
   }
 
   respondWithJSON(res, 200, chirp);
+}
+
+export async function handlerChirpDeletion(req: Request, res: Response) {
+  const { chirpId } = req.params;
+
+  const token = getBearerToken(req);
+  const userId = validateJWT(token, config.jwt.secret);
+
+  const chirp = await getById(chirpId);
+  if (!chirp) {
+    throw new NotFoundError("Chirp not found");
+  }
+
+  if (chirp.userId !== userId) {
+    throw new ForbiddenError("You cannot delete this resource.");
+  }
+
+  await deleteById(chirpId);
+
+  respondWithJSON(res, 204, {});
 }
 
 function validateChirp(body: string) {

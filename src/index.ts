@@ -16,6 +16,7 @@ import {
   handlerChirpCreation,
   handlerChirpList,
   handlerChirpRetrival,
+  handlerChirpDeletion,
 } from "./api/chirpHandler.js";
 import { errorHandler } from "./api/errorHandler.js";
 import { config } from "./config.js";
@@ -62,6 +63,9 @@ app.post("/api/chirps", (req, res, next) => {
 });
 app.get("/api/chirps/:chirpId", (req, res, next) => {
   Promise.resolve(handlerChirpRetrival(req, res)).catch(next);
+});
+app.delete("/api/chirps/:chirpId", (req, res, next) => {
+  Promise.resolve(handlerChirpDeletion(req, res)).catch(next);
 });
 
 app.use(errorHandler);

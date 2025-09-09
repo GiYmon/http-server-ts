@@ -28,6 +28,10 @@ export async function getById(id: string): Promise<NewChirp | undefined> {
   return result;
 }
 
+export async function deleteById(id: string) {
+  await db.delete(chirps).where(eq(chirps.id, id));
+}
+
 export async function deleteAll() {
   await db.delete(chirps);
 }

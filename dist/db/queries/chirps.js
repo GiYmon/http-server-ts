@@ -21,6 +21,9 @@ export async function getById(id) {
         .limit(1);
     return result;
 }
+export async function deleteById(id) {
+    await db.delete(chirps).where(eq(chirps.id, id));
+}
 export async function deleteAll() {
     await db.delete(chirps);
 }

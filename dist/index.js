@@ -8,7 +8,7 @@ import { handlerMetrics } from "./api/metricsHandler.js";
 import { handlerResetMetrics } from "./api/resetMetricsHandler.js";
 import { handlerUserCreation, handlerUserUpdate } from "./api/userHandler.js";
 import { handlerLogin, handlerRefresh, handlerRevoke, } from "./api/authHandler.js";
-import { handlerChirpCreation, handlerChirpList, handlerChirpRetrival, } from "./api/chirpHandler.js";
+import { handlerChirpCreation, handlerChirpList, handlerChirpRetrival, handlerChirpDeletion, } from "./api/chirpHandler.js";
 import { errorHandler } from "./api/errorHandler.js";
 import { config } from "./config.js";
 const migrationClient = postgres(config.db.url, { max: 1 });
@@ -50,6 +50,9 @@ app.post("/api/chirps", (req, res, next) => {
 });
 app.get("/api/chirps/:chirpId", (req, res, next) => {
     Promise.resolve(handlerChirpRetrival(req, res)).catch(next);
+});
+app.delete("/api/chirps/:chirpId", (req, res, next) => {
+    Promise.resolve(handlerChirpDeletion(req, res)).catch(next);
 });
 app.use(errorHandler);
 app.listen(config.api.port, () => {
