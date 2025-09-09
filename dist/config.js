@@ -23,5 +23,6 @@ export const config = {
         defaultDuration: 60 * 60, // 1 hour in seconds
         secret: envOrThrow("JWT_SECRET"),
         issuer: "chirpy",
+        refreshTokenDuration: 60 * 24 * 60 * 60 * 1000, // 60 days in miliseconds
     },
 };

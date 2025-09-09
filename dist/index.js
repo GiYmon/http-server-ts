@@ -7,7 +7,7 @@ import { handlerReadiness } from "./api/readinessHandler.js";
 import { handlerMetrics } from "./api/metricsHandler.js";
 import { handlerResetMetrics } from "./api/resetMetricsHandler.js";
 import { handlerUserCreation } from "./api/userHandler.js";
-import { handlerLogin } from "./api/authHandler.js";
+import { handlerLogin, handlerRefresh, handlerRevoke, } from "./api/authHandler.js";
 import { handlerChirpCreation, handlerChirpList, handlerChirpRetrival, } from "./api/chirpHandler.js";
 import { errorHandler } from "./api/errorHandler.js";
 import { config } from "./config.js";
@@ -29,6 +29,12 @@ app.post("/admin/reset", (req, res, next) => {
 });
 app.post("/api/login", (req, res, next) => {
     Promise.resolve(handlerLogin(req, res)).catch(next);
+});
+app.post("/api/refresh", (req, res, next) => {
+    Promise.resolve(handlerRefresh(req, res)).catch(next);
+});
+app.post("/api/revoke", (req, res, next) => {
+    Promise.resolve(handlerRevoke(req, res)).catch(next);
 });
 app.post("/api/users", (req, res, next) => {
     Promise.resolve(handlerUserCreation(req, res)).catch(next);

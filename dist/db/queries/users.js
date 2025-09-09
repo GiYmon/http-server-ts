@@ -17,6 +17,14 @@ export async function getByEmail(email) {
         .limit(1);
     return result;
 }
+export async function getById(id) {
+    const [result] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, id))
+        .limit(1);
+    return result;
+}
 export async function deleteUsers() {
     await db.delete(users);
 }

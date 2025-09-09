@@ -21,6 +21,16 @@ export async function getByEmail(email: string): Promise<NewUser> {
   return result;
 }
 
+export async function getById(id: string): Promise<NewUser | undefined> {
+  const [result] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, id))
+    .limit(1);
+
+  return result;
+}
+
 export async function deleteUsers() {
   await db.delete(users);
 }

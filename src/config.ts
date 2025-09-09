@@ -21,6 +21,7 @@ type JWTConfig = {
   defaultDuration: number;
   secret: string;
   issuer: string;
+  refreshTokenDuration: number;
 };
 
 process.loadEnvFile();
@@ -51,5 +52,6 @@ export const config: Config = {
     defaultDuration: 60 * 60, // 1 hour in seconds
     secret: envOrThrow("JWT_SECRET"),
     issuer: "chirpy",
+    refreshTokenDuration: 60 * 24 * 60 * 60 * 1000, // 60 days in miliseconds
   },
 };
