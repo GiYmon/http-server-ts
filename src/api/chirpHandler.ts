@@ -5,6 +5,7 @@ import { ForbiddenError } from "../errors/forbiddenError.js";
 import { create, list, getById, deleteById } from "../db/queries/chirps.js";
 import { getBearerToken, validateJWT } from "../auth.js";
 import { config } from "../config.js";
+import { NewChirp } from "../db/schema.js";
 
 import type { Request, Response } from "express";
 
@@ -26,7 +27,19 @@ export async function handlerChirpCreation(req: Request, res: Response) {
 
 export async function handlerChirpList(req: Request, res: Response) {
   const authorId = req.query.authorId as string | undefined;
-  const chirps = await list(authorId);
+  let chirps = await list(authorId);
+
+  let sortDirection = "asc";
+  let sortDirectionParam = req.query.sort;
+  if (sortDirectionParam === "desc") {
+    sortDirection = "desc";
+  }
+
+  chirps = chirps.sort((a, b) =>
+    sortDirection === "asc"
+      ? a.createdAt!.getTime() - b.createdAt!.getTime()
+      : b.createdAt!.getTime() - a.createdAt!.getTime()
+  );
 
   respondWithJSON(res, 200, chirps);
 }

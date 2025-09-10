@@ -15,7 +15,13 @@ export async function handlerChirpCreation(req, res) {
 }
 export async function handlerChirpList(req, res) {
     const authorId = req.query.authorId;
-    const chirps = await list(authorId);
+    const sort = req.query.sort || "asc";
+    let chirps = await list(authorId);
+    chirps = chirps.sort((a, b) => {
+        const aTime = new Date(a.createdAt).getTime();
+        const bTime = new Date(b.createdAt).getTime();
+        return sort === "desc" ? bTime - aTime : aTime - bTime;
+    });
     respondWithJSON(res, 200, chirps);
 }
 export async function handlerChirpRetrival(req, res) {
