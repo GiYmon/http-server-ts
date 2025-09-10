@@ -9,9 +9,11 @@ export async function create(chirp) {
         .returning();
     return result;
 }
-export async function list() {
-    const results = await db.select().from(chirps);
-    return results;
+export async function list(authorId) {
+    if (authorId) {
+        return await db.select().from(chirps).where(eq(chirps.userId, authorId));
+    }
+    return await db.select().from(chirps);
 }
 export async function getById(id) {
     const [result] = await db

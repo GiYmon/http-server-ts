@@ -12,10 +12,12 @@ export async function create(chirp: NewChirp) {
   return result;
 }
 
-export async function list(): Promise<NewChirp[]> {
-  const results = await db.select().from(chirps);
+export async function list(authorId: string | undefined): Promise<NewChirp[]> {
+  if (authorId) {
+    return await db.select().from(chirps).where(eq(chirps.userId, authorId));
+  }
 
-  return results;
+  return await db.select().from(chirps);
 }
 
 export async function getById(id: string): Promise<NewChirp | undefined> {

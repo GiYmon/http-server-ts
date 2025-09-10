@@ -25,7 +25,8 @@ export async function handlerChirpCreation(req: Request, res: Response) {
 }
 
 export async function handlerChirpList(req: Request, res: Response) {
-  const chirps = await list();
+  const authorId = req.query.authorId as string | undefined;
+  const chirps = await list(authorId);
 
   respondWithJSON(res, 200, chirps);
 }

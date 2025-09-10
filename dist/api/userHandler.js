@@ -1,7 +1,8 @@
 import { createUser, updateUser, upgrateToRed, } from "../db/queries/users.js";
 import { respondWithJSON } from "./json.js";
 import { BadRequestError } from "../errors/badRequestError.js";
-import { hashPassword, getBearerToken, validateJWT } from "../auth.js";
+import { ForbiddenError } from "../errors/forbiddenError.js";
+import { hashPassword, getBearerToken, validateJWT, getAPIKey, } from "../auth.js";
 import { config } from "../config.js";
 export async function handlerUserCreation(req, res) {
     const params = req.body;
@@ -42,6 +43,10 @@ export async function handlerUserUpdate(req, res) {
     });
 }
 export async function handlerUserUpgrade(req, res) {
+    const apiKey = getAPIKey(req);
+    if (apiKey !== config.api.polkaKey) {
+        throw new ForbiddenError("You don't have access to this resource");
+    }
     const params = req.body;
     if (params.event !== "user.upgraded") {
         respondWithJSON(res, 204, {});

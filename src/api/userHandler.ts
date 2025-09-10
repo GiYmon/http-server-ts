@@ -6,11 +6,16 @@ import {
 } from "../db/queries/users.js";
 import { respondWithJSON } from "./json.js";
 import { BadRequestError } from "../errors/badRequestError.js";
+import { ForbiddenError } from "../errors/forbiddenError.js";
 import { NewUser } from "../db/schema.js";
-import { hashPassword, getBearerToken, validateJWT } from "../auth.js";
+import {
+  hashPassword,
+  getBearerToken,
+  validateJWT,
+  getAPIKey,
+} from "../auth.js";
 import { config } from "../config.js";
 import type { Request, Response } from "express";
-import { NotFoundError } from "../errors/notFoundError.js";
 
 export type UserResponse = Omit<NewUser, "hashedPassword">;
 
@@ -80,6 +85,12 @@ export async function handlerUserUpgrade(req: Request, res: Response) {
       userId: string;
     };
   };
+
+  const apiKey = getAPIKey(req);
+
+  if (apiKey !== config.api.polkaKey) {
+    throw new ForbiddenError("You don't have access to this resource");
+  }
 
   const params: parameters = req.body;
 
