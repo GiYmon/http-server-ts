@@ -20,6 +20,14 @@ export async function updateUser(id, email, hashedPassword) {
         .returning();
     return result;
 }
+export async function upgrateToRed(id) {
+    const [result] = await db
+        .update(users)
+        .set({ isChirpyRed: true })
+        .where(eq(users.id, id))
+        .returning();
+    return result;
+}
 export async function getByEmail(email) {
     const [result] = await db
         .select()

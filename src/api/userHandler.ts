@@ -1,11 +1,16 @@
-import { createUser, getByEmail, updateUser } from "../db/queries/users.js";
+import {
+  createUser,
+  updateUser,
+  getById,
+  upgrateToRed,
+} from "../db/queries/users.js";
 import { respondWithJSON } from "./json.js";
 import { BadRequestError } from "../errors/badRequestError.js";
-import { UnauthorizedError } from "../errors/unauthorizedError.js";
 import { NewUser } from "../db/schema.js";
 import { hashPassword, getBearerToken, validateJWT } from "../auth.js";
 import { config } from "../config.js";
 import type { Request, Response } from "express";
+import { NotFoundError } from "../errors/notFoundError.js";
 
 export type UserResponse = Omit<NewUser, "hashedPassword">;
 
@@ -36,6 +41,7 @@ export async function handlerUserCreation(req: Request, res: Response) {
     email: user.email,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+    isChirpyRed: user.isChirpyRed,
   } satisfies UserResponse);
 }
 
@@ -63,5 +69,26 @@ export async function handlerUserUpdate(req: Request, res: Response) {
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
     email: user.email,
+    isChirpyRed: user.isChirpyRed,
   } satisfies UserResponse);
+}
+
+export async function handlerUserUpgrade(req: Request, res: Response) {
+  type parameters = {
+    event: string;
+    data: {
+      userId: string;
+    };
+  };
+
+  const params: parameters = req.body;
+
+  if (params.event !== "user.upgraded") {
+    respondWithJSON(res, 204, {});
+    return;
+  }
+
+  await upgrateToRed(params.data.userId);
+
+  respondWithJSON(res, 204, {});
 }

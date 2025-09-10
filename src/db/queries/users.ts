@@ -28,6 +28,16 @@ export async function updateUser(
   return result;
 }
 
+export async function upgrateToRed(id: string) {
+  const [result] = await db
+    .update(users)
+    .set({ isChirpyRed: true })
+    .where(eq(users.id, id))
+    .returning();
+
+  return result;
+}
+
 export async function getByEmail(email: string): Promise<NewUser> {
   const [result] = await db
     .select()

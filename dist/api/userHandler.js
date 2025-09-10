@@ -1,4 +1,4 @@
-import { createUser, updateUser } from "../db/queries/users.js";
+import { createUser, updateUser, upgrateToRed, } from "../db/queries/users.js";
 import { respondWithJSON } from "./json.js";
 import { BadRequestError } from "../errors/badRequestError.js";
 import { hashPassword, getBearerToken, validateJWT } from "../auth.js";
@@ -21,6 +21,7 @@ export async function handlerUserCreation(req, res) {
         email: user.email,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
+        isChirpyRed: user.isChirpyRed,
     });
 }
 export async function handlerUserUpdate(req, res) {
@@ -37,5 +38,15 @@ export async function handlerUserUpdate(req, res) {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         email: user.email,
+        isChirpyRed: user.isChirpyRed,
     });
+}
+export async function handlerUserUpgrade(req, res) {
+    const params = req.body;
+    if (params.event !== "user.upgraded") {
+        respondWithJSON(res, 204, {});
+        return;
+    }
+    await upgrateToRed(params.data.userId);
+    respondWithJSON(res, 204, {});
 }

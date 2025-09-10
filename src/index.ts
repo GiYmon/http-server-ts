@@ -6,7 +6,11 @@ import { logResponses, metricsInc } from "./middleware.js";
 import { handlerReadiness } from "./api/readinessHandler.js";
 import { handlerMetrics } from "./api/metricsHandler.js";
 import { handlerResetMetrics } from "./api/resetMetricsHandler.js";
-import { handlerUserCreation, handlerUserUpdate } from "./api/userHandler.js";
+import {
+  handlerUserCreation,
+  handlerUserUpdate,
+  handlerUserUpgrade,
+} from "./api/userHandler.js";
 import {
   handlerLogin,
   handlerRefresh,
@@ -51,6 +55,9 @@ app.post("/api/revoke", (req, res, next) => {
 });
 app.post("/api/users", (req, res, next) => {
   Promise.resolve(handlerUserCreation(req, res)).catch(next);
+});
+app.post("/api/polka/webhooks", (req, res, next) => {
+  Promise.resolve(handlerUserUpgrade(req, res)).catch(next);
 });
 app.put("/api/users", (req, res, next) => {
   Promise.resolve(handlerUserUpdate(req, res)).catch(next);
